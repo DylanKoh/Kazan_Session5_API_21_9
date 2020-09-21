@@ -14,114 +14,80 @@ namespace Kazan_Session5_API_21_9.Controllers
     {
         private Session5Entities db = new Session5Entities();
 
-        // GET: WellLayers
+        public WellLayersController()
+        {
+            db.Configuration.LazyLoadingEnabled = false;
+        }
+
+        // POST: WellLayers
+        [HttpPost]
         public ActionResult Index()
         {
-            var wellLayers = db.WellLayers.Include(w => w.RockType).Include(w => w.Well);
-            return View(wellLayers.ToList());
-        }
-
-        // GET: WellLayers/Details/5
-        public ActionResult Details(long? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            WellLayer wellLayer = db.WellLayers.Find(id);
-            if (wellLayer == null)
-            {
-                return HttpNotFound();
-            }
-            return View(wellLayer);
-        }
-
-        // GET: WellLayers/Create
-        public ActionResult Create()
-        {
-            ViewBag.RockTypeID = new SelectList(db.RockTypes, "ID", "Name");
-            ViewBag.WellID = new SelectList(db.Wells, "ID", "WellName");
-            return View();
+            var wellLayers = db.WellLayers;
+            return Json(wellLayers.ToList());
         }
 
         // POST: WellLayers/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "ID,WellID,RockTypeID,StartPoint,EndPoint")] WellLayer wellLayer)
         {
             if (ModelState.IsValid)
             {
                 db.WellLayers.Add(wellLayer);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return Json("Create well layer!");
             }
-
-            ViewBag.RockTypeID = new SelectList(db.RockTypes, "ID", "Name", wellLayer.RockTypeID);
-            ViewBag.WellID = new SelectList(db.Wells, "ID", "WellName", wellLayer.WellID);
-            return View(wellLayer);
-        }
-
-        // GET: WellLayers/Edit/5
-        public ActionResult Edit(long? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            WellLayer wellLayer = db.WellLayers.Find(id);
-            if (wellLayer == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.RockTypeID = new SelectList(db.RockTypes, "ID", "Name", wellLayer.RockTypeID);
-            ViewBag.WellID = new SelectList(db.Wells, "ID", "WellName", wellLayer.WellID);
-            return View(wellLayer);
+            return Json(wellLayer);
         }
 
         // POST: WellLayers/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "ID,WellID,RockTypeID,StartPoint,EndPoint")] WellLayer wellLayer)
         {
             if (ModelState.IsValid)
             {
                 db.Entry(wellLayer).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return Json("Successfully edited well layer!");
             }
-            ViewBag.RockTypeID = new SelectList(db.RockTypes, "ID", "Name", wellLayer.RockTypeID);
-            ViewBag.WellID = new SelectList(db.Wells, "ID", "WellName", wellLayer.WellID);
             return View(wellLayer);
         }
 
-        // GET: WellLayers/Delete/5
-        public ActionResult Delete(long? id)
+        // POST: WellLayers/GetWellLayers?WellID={}
+        [HttpPost]
+        public ActionResult GetWellLayers(long WellID)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            WellLayer wellLayer = db.WellLayers.Find(id);
-            if (wellLayer == null)
-            {
-                return HttpNotFound();
-            }
-            return View(wellLayer);
+            var getWellLayer = (from x in db.WellLayers
+                                where x.WellID == WellID
+                                join y in db.RockTypes on x.RockTypeID equals y.ID
+                                orderby x.StartPoint
+                                select new { RockName = y.Name, BackgroundColour = y.BackgroundColor, Start = x.StartPoint, End = x.EndPoint }).ToList();
+            return Json(getWellLayer);
         }
 
-        // POST: WellLayers/Delete/5
+        // POST: WellLayers/GetOriginalWellLayers?WellID={}
+        [HttpPost]
+        public ActionResult GetOriginalWellLayers(long WellID)
+        {
+            var getWellLayer = (from x in db.WellLayers
+                                where x.WellID == WellID
+                                select x).ToList();
+            return Json(getWellLayer);
+        }
+
+        // POST: WellLayers/Delete
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(long id)
+        public ActionResult DeleteConfirmed([Bind(Include = "ID,WellID,RockTypeID,StartPoint,EndPoint")] WellLayer wellLayer)
         {
-            WellLayer wellLayer = db.WellLayers.Find(id);
-            db.WellLayers.Remove(wellLayer);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            var findToDelete = (from x in db.WellLayers
+                                where x.WellID == wellLayer.WellID && x.RockTypeID == wellLayer.RockTypeID
+                                select x).FirstOrDefault();
+            if (findToDelete != null)
+            {
+                db.WellLayers.Remove(findToDelete);
+                db.SaveChanges();
+            }
+            return Json("Well Layer removed!");
         }
 
         protected override void Dispose(bool disposing)

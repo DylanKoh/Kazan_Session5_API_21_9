@@ -14,14 +14,21 @@ namespace Kazan_Session5_API_21_9.Controllers
     {
         private Session5Entities db = new Session5Entities();
 
-        // GET: Wells
-        public ActionResult Index()
+        public WellsController()
         {
-            var wells = db.Wells.Include(w => w.WellType);
-            return View(wells.ToList());
+            db.Configuration.LazyLoadingEnabled = false;
         }
 
-        // GET: Wells/Details/5
+        // POST: Wells
+        [HttpPost]
+        public ActionResult Index()
+        {
+            var wells = db.Wells;
+            return Json(wells.ToList());
+        }
+
+        // POST: Wells/Details/5
+        [HttpPost]
         public ActionResult Details(long? id)
         {
             if (id == null)
@@ -33,91 +40,65 @@ namespace Kazan_Session5_API_21_9.Controllers
             {
                 return HttpNotFound();
             }
-            return View(well);
-        }
-
-        // GET: Wells/Create
-        public ActionResult Create()
-        {
-            ViewBag.WellTypeID = new SelectList(db.WellTypes, "ID", "Name");
-            return View();
+            return Json(well);
         }
 
         // POST: Wells/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "ID,WellTypeID,WellName,GasOilDepth,Capacity")] Well well)
         {
             if (ModelState.IsValid)
             {
-                db.Wells.Add(well);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                var findWell = (from x in db.Wells
+                                where x.WellName == well.WellName
+                                select x).FirstOrDefault();
+                if (findWell == null)
+                {
+                    db.Wells.Add(well);
+                    db.SaveChanges();
+                    return Json("Created Well conpleted!");
+                }
+                else
+                {
+                    return Json(well);
+                }
+                
             }
-
-            ViewBag.WellTypeID = new SelectList(db.WellTypes, "ID", "Name", well.WellTypeID);
-            return View(well);
-        }
-
-        // GET: Wells/Edit/5
-        public ActionResult Edit(long? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Well well = db.Wells.Find(id);
-            if (well == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.WellTypeID = new SelectList(db.WellTypes, "ID", "Name", well.WellTypeID);
-            return View(well);
+            return Json(well);
         }
 
         // POST: Wells/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "ID,WellTypeID,WellName,GasOilDepth,Capacity")] Well well)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(well).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                var findWell = (from x in db.Wells
+                                where x.WellName == well.WellName &&  x.ID != well.ID
+                                select x).FirstOrDefault();
+                if (findWell == null)
+                {
+                    db.Entry(well).State = EntityState.Modified;
+                    db.SaveChanges();
+                    return Json("Completed editing well!");
+                }
+                else
+                {
+                    return Json(well);
+                }
+
             }
-            ViewBag.WellTypeID = new SelectList(db.WellTypes, "ID", "Name", well.WellTypeID);
-            return View(well);
+            return Json(well);
         }
 
-        // GET: Wells/Delete/5
-        public ActionResult Delete(long? id)
+        // POST: Wells/GetNewID
+        [HttpPost]
+        public ActionResult GetNewID()
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Well well = db.Wells.Find(id);
-            if (well == null)
-            {
-                return HttpNotFound();
-            }
-            return View(well);
-        }
-
-        // POST: Wells/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(long id)
-        {
-            Well well = db.Wells.Find(id);
-            db.Wells.Remove(well);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            var getNew = (from x in db.Wells
+                          orderby x.ID descending
+                          select x.ID).FirstOrDefault() + 1;
+            return Json(getNew);
         }
 
         protected override void Dispose(bool disposing)
