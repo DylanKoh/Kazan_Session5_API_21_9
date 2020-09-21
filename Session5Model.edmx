@@ -1,0 +1,265 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="Session5Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="RockTypes">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="BackgroundColor" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="WellLayers">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="WellID" Type="bigint" Nullable="false" />
+          <Property Name="RockTypeID" Type="bigint" Nullable="false" />
+          <Property Name="StartPoint" Type="bigint" Nullable="false" />
+          <Property Name="EndPoint" Type="bigint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Wells">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="WellTypeID" Type="bigint" Nullable="false" />
+          <Property Name="WellName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="GasOilDepth" Type="bigint" Nullable="false" />
+          <Property Name="Capacity" Type="bigint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="WellTypes">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_WellLayers_RockTypes">
+          <End Role="RockTypes" Type="Self.RockTypes" Multiplicity="1" />
+          <End Role="WellLayers" Type="Self.WellLayers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RockTypes">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="WellLayers">
+              <PropertyRef Name="RockTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_WellLayers_Wells">
+          <End Role="Wells" Type="Self.Wells" Multiplicity="1" />
+          <End Role="WellLayers" Type="Self.WellLayers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Wells">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="WellLayers">
+              <PropertyRef Name="WellID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Wells_WellTypes">
+          <End Role="WellTypes" Type="Self.WellTypes" Multiplicity="1" />
+          <End Role="Wells" Type="Self.Wells" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="WellTypes">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Wells">
+              <PropertyRef Name="WellTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="Session5ModelStoreContainer">
+          <EntitySet Name="RockTypes" EntityType="Self.RockTypes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="WellLayers" EntityType="Self.WellLayers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Wells" EntityType="Self.Wells" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="WellTypes" EntityType="Self.WellTypes" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_WellLayers_RockTypes" Association="Self.FK_WellLayers_RockTypes">
+            <End Role="RockTypes" EntitySet="RockTypes" />
+            <End Role="WellLayers" EntitySet="WellLayers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_WellLayers_Wells" Association="Self.FK_WellLayers_Wells">
+            <End Role="Wells" EntitySet="Wells" />
+            <End Role="WellLayers" EntitySet="WellLayers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Wells_WellTypes" Association="Self.FK_Wells_WellTypes">
+            <End Role="WellTypes" EntitySet="WellTypes" />
+            <End Role="Wells" EntitySet="Wells" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="Session5Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="RockType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="BackgroundColor" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="WellLayers" Relationship="Self.FK_WellLayers_RockTypes" FromRole="RockTypes" ToRole="WellLayers" />
+        </EntityType>
+        <EntityType Name="WellLayer">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="WellID" Type="Int64" Nullable="false" />
+          <Property Name="RockTypeID" Type="Int64" Nullable="false" />
+          <Property Name="StartPoint" Type="Int64" Nullable="false" />
+          <Property Name="EndPoint" Type="Int64" Nullable="false" />
+          <NavigationProperty Name="RockType" Relationship="Self.FK_WellLayers_RockTypes" FromRole="WellLayers" ToRole="RockTypes" />
+          <NavigationProperty Name="Well" Relationship="Self.FK_WellLayers_Wells" FromRole="WellLayers" ToRole="Wells" />
+        </EntityType>
+        <EntityType Name="Well">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="WellTypeID" Type="Int64" Nullable="false" />
+          <Property Name="WellName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="GasOilDepth" Type="Int64" Nullable="false" />
+          <Property Name="Capacity" Type="Int64" Nullable="false" />
+          <NavigationProperty Name="WellLayers" Relationship="Self.FK_WellLayers_Wells" FromRole="Wells" ToRole="WellLayers" />
+          <NavigationProperty Name="WellType" Relationship="Self.FK_Wells_WellTypes" FromRole="Wells" ToRole="WellTypes" />
+        </EntityType>
+        <EntityType Name="WellType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Wells" Relationship="Self.FK_Wells_WellTypes" FromRole="WellTypes" ToRole="Wells" />
+        </EntityType>
+        <Association Name="FK_WellLayers_RockTypes">
+          <End Role="RockTypes" Type="Self.RockType" Multiplicity="1" />
+          <End Role="WellLayers" Type="Self.WellLayer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RockTypes">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="WellLayers">
+              <PropertyRef Name="RockTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_WellLayers_Wells">
+          <End Role="Wells" Type="Self.Well" Multiplicity="1" />
+          <End Role="WellLayers" Type="Self.WellLayer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Wells">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="WellLayers">
+              <PropertyRef Name="WellID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Wells_WellTypes">
+          <End Role="WellTypes" Type="Self.WellType" Multiplicity="1" />
+          <End Role="Wells" Type="Self.Well" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="WellTypes">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Wells">
+              <PropertyRef Name="WellTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="Session5Entities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="RockTypes" EntityType="Self.RockType" />
+          <EntitySet Name="WellLayers" EntityType="Self.WellLayer" />
+          <EntitySet Name="Wells" EntityType="Self.Well" />
+          <EntitySet Name="WellTypes" EntityType="Self.WellType" />
+          <AssociationSet Name="FK_WellLayers_RockTypes" Association="Self.FK_WellLayers_RockTypes">
+            <End Role="RockTypes" EntitySet="RockTypes" />
+            <End Role="WellLayers" EntitySet="WellLayers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_WellLayers_Wells" Association="Self.FK_WellLayers_Wells">
+            <End Role="Wells" EntitySet="Wells" />
+            <End Role="WellLayers" EntitySet="WellLayers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Wells_WellTypes" Association="Self.FK_Wells_WellTypes">
+            <End Role="WellTypes" EntitySet="WellTypes" />
+            <End Role="Wells" EntitySet="Wells" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="Session5ModelStoreContainer" CdmEntityContainer="Session5Entities">
+          <EntitySetMapping Name="RockTypes">
+            <EntityTypeMapping TypeName="Session5Model.RockType">
+              <MappingFragment StoreEntitySet="RockTypes">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="BackgroundColor" ColumnName="BackgroundColor" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WellLayers">
+            <EntityTypeMapping TypeName="Session5Model.WellLayer">
+              <MappingFragment StoreEntitySet="WellLayers">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="WellID" ColumnName="WellID" />
+                <ScalarProperty Name="RockTypeID" ColumnName="RockTypeID" />
+                <ScalarProperty Name="StartPoint" ColumnName="StartPoint" />
+                <ScalarProperty Name="EndPoint" ColumnName="EndPoint" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Wells">
+            <EntityTypeMapping TypeName="Session5Model.Well">
+              <MappingFragment StoreEntitySet="Wells">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="WellTypeID" ColumnName="WellTypeID" />
+                <ScalarProperty Name="WellName" ColumnName="WellName" />
+                <ScalarProperty Name="GasOilDepth" ColumnName="GasOilDepth" />
+                <ScalarProperty Name="Capacity" ColumnName="Capacity" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WellTypes">
+            <EntityTypeMapping TypeName="Session5Model.WellType">
+              <MappingFragment StoreEntitySet="WellTypes">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
