@@ -16,7 +16,7 @@
     <AssemblyName>Kazan_Session5_API_21_9</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <Use64BitIISExpress />
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
@@ -189,8 +189,8 @@
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Session5Model.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Session5Model.Context.cs</LastGenOutput>
       <DependentUpon>Session5Model.edmx</DependentUpon>
+      <LastGenOutput>Session5Model.Context.cs</LastGenOutput>
     </Content>
     <Content Include="Session5Model.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -261,7 +261,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>54694</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:54694/</IISUrl>
+          <IISUrl>http://localhost/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
